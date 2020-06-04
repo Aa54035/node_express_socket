@@ -12,18 +12,11 @@ app.use(bodyParser.urlencoded({extended: false}))
  
 var DBURL =
  'mongodb+srv://admin:admin@mongoclustor-t0m10.mongodb.net/node_socket_Mongo?retryWrites=true&w=majority';
+ 
+ //This Message will be stored as its in Collection 
+ //as Message DB
+// IN Message DB array as row will be stored 
 
-// var DBURL =
-//   'mongodb+srv://user:user123@mongoclustor-t0m10.mongodb.net/node_socket_Mongo?retryWrites=true&w=majority';
-
-
-// const MongoClient = require('mongodb').MongoClient;
-// const uri = "mongodb+srv://user:user@mongoclustor-t0m10.mongodb.net/node_socket_Mongo.node_socket_Mongo?retryWrites=true&w=majority";
-// const client = new MongoClient(uri, { useNewUrlParser: true });
-// client.connect(err => {
-//      console.log('DB connection ==>'+err);
-// });
-   
 var Message = mongoose.model('Message',{
     name : String ,
     message : String 
@@ -35,7 +28,10 @@ var messages = [
 ]
 
 app.get('/messages', (req, res) =>{
-    res.send(messages)
+    Message.find({},(err,message) =>{
+        res.send(messages)
+    })
+    
 })
 
 app.post('/messages', (req, res) =>{
@@ -44,7 +40,17 @@ app.post('/messages', (req, res) =>{
      if (Err) {
          res.sendStatus(5000);
      }
-     messages.push(req.body)
+
+     Message.findOne({message : 'hell'},(err,hellword)=>{
+         if(hellword)
+         {
+             console.log('we have found F* word '+hellword);
+             message.remove({_id:hellword.id},(err)=>{
+                 console.log('bad word '+hellword+'  found');
+             });
+         }
+     })
+    // messages.push(req.body)
      io.emit('message', req.body)
      res.sendStatus(200)
  
